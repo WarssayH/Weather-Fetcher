@@ -1,0 +1,115 @@
+@import url(https://fonts.googleapis.com/css2?family=Jost:wght@200&display=swap);
+
+* {
+    margin: 0;
+    border: 0;
+    padding: 0;
+}
+
+html {
+    height: 100%;
+    width: 100%;
+}
+
+:root {
+    --backgroundColor: black;
+    --foregroundColor: white;
+    --textColor: black;
+}
+
+body {
+    height: 100%;
+    width: 100%;
+    background-image: url(img/Daytime.jfif);
+    background-repeat: no-repeat;
+    color: var(--textColor);
+    font-family: "Jost";
+    overflow: hidden;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    position: relative;
+    margin: 0px;
+    border: 0px;
+    padding: 0px;
+}
+
+body::-webkit-scrollbar {
+    display: none;
+} 
+
+#showWeather {
+    background-color: var(--foregroundColor);
+    border-radius: 4%;
+    color: var(--textColor);
+    min-height: 10cm;
+    max-height: 15cm;
+    min-width: 11.5cm;
+    max-width: 20cm;
+    left: 50%;
+    top: 50%;
+    position: absolute;
+    transform: translate(-50%, -50%);
+}
+
+#showWeather > div {
+    display: flex;
+    flex-flow: row nowrap;
+    flex-basis: auto;
+    align-content: flex-start;
+    justify-content: center;
+}
+
+#showWeather > #unitChangeBack, #unitChangeForth {
+    position: absolute;
+    top: 0%;
+    font-family: "Jost";
+    background-color: rgba(0,0,0,0);
+    font-size: clamp(2.1rem, 3vmax, 2.7rem);
+}
+
+#showWeather > #unitChangeForth {
+    right: 0%;
+    padding-right: 2.5%;
+}
+
+#showWeather > #unitChangeBack {
+    left: 0%;
+    padding-left: 2.5%;
+}
+
+#showWeather  p {
+    font-size: clamp(2rem, 2.7vmax, 2.5rem);
+    text-align: center;
+}
+
+#showWeather > #stats {
+    flex-flow: row wrap;
+    justify-content: center;
+}
+
+#stats > .row2, .row3 {
+    flex: 0 0 33%;
+}
+
+#stats > .row4, .row5, .row6, .row7 {
+    flex: 0 0 50%;
+}
+
+#stats > #tempLow {
+    font-size: clamp(2.1rem, 3vmax, 2.7rem);
+}
+
+#stats > #tempCurrent {
+    font-size: clamp(2.5rem, 4vmax, 3.2rem);
+}
+
+#stats > #tempHigh {
+    font-size: clamp(2.1rem, 3vmax, 2.7rem);
+}
+
+#weatherIcon {
+    width: 3rem;
+    height: 3rem;
+    padding-top: 1px;
+    padding-left: 6px;
+}
