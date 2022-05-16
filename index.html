@@ -7,37 +7,49 @@
         <title>Weather Project</title>
     </head>
     <body>
-        <div id="showWeather">
-            <button id="unitChangeBack" type="button">°F</button>
-            <button id="unitChangeForth" type="button">K</button>
-            <p id="location">New York City, USA</p>
-
-            <div class="row1">
-                <p id="weather">Overcast Clouds</p>
-                <img id="weatherIcon" src="img/icons/04d.png"></img>
+        <div id="content">
+            <div id="resultsTray">
+                <ul id="results"> 
+                </ul>
             </div>
+            <div id="showWeather">
+                <div id="settings">
+                    <button id="unitChangeBack" type="button">°F</button>
+                    <form id="searchBar">
+                        <input id="location" type="text" placeholder="City, Country">
+                    </form>
+                    <input type="image" id="searchIcon" src="img/icons/search.png"></input>
+                    <button id="unitChangeForth" type="button">K</button>
+                </div>
 
-            <div id="stats">
-                <p class="row2" id="tempLowLabel">Low:</p>
-                <p class="row2" id="tempCurrentLabel">Current:</p>
-                <p class="row2" id="tempHighLabel">High:</p>
-    
-                <p class="row3" id="tempLow">-16°C</p>
-                <p class="row3" id="tempCurrent">-12°C</p>
-                <p class="row3" id="tempHigh">14°C</p>
-    
-                <p class="row4" id="feelsLikeLabel">Feels Like:</p>
-                <p class="row4" id="pressureLabel">Pressure:</p>
-    
-                <p class="row5" id="tempFeelsLike">-15°C</p>
-                <p class="row5" id="pressure">36%</p>
-    
-                <p class="row6" id="windLabel">Wind:</p>
-                <p class="row6" id="humidityLabel">Humidity:</p>
-    
-                <p class="row7" id="windSpeed">17 km/h NE</p>
-                <p class="row7" id="humidity">63%</p>
+                <div id="summary" class="row1">
+                    <p id="weather">Overcast Clouds</p>
+                    <img id="weatherIcon" src="img/icons/04d.png"></img>
+                </div>
+
+                <div id="stats">
+                    <p class="row2" id="tempLowLabel">Low:</p>
+                    <p class="row2" id="tempCurrentLabel">Current:</p>
+                    <p class="row2" id="tempHighLabel">High:</p>
+        
+                    <p class="row3" id="tempLow">-16°C</p>
+                    <p class="row3" id="tempCurrent">-12°C</p>
+                    <p class="row3" id="tempHigh">14°C</p>
+        
+                    <p class="row4" id="feelsLikeLabel">Feels Like:</p>
+                    <p class="row4" id="pressureLabel">Pressure:</p>
+        
+                    <p class="row5" id="tempFeelsLike">-15°C</p>
+                    <p class="row5" id="pressure">1000 hPa</p>
+        
+                    <p class="row6" id="windLabel">Wind:</p>
+                    <p class="row6" id="humidityLabel">Humidity:</p>
+        
+                    <p class="row7" id="windSpeed">17 km/h NE</p>
+                    <p class="row7" id="humidity">63%</p>
+                </div>
             </div>
-        </div><script type="module" src="functionality.js"></script>
+        </div>
+        <script type="module" src="functionality.js"></script>
     </body>        
 </html>

@@ -1,23 +1,16 @@
 // baseUrl = http://api.openweathermap.org/data/2.5/weather?id=5128581&mode=JSON&units=metric&appid=42662a125c8a2e1a68ae6706016e85ec
 
 // Assign constants and globals, then fetch weather data to display and set a 5 minute interval for fetching new weather data
-var unit = "metric";
+console.log("👋🏽 Hello!")
+var location;
+var unit = "metric"
+const resultsTray = document.getElementById("resultsTray")
+const search = document.getElementById("location")
+var locations = await fetchLocations()
+import {APIkey} from "./secret.js"
+fetchWeather(); setInterval(fetchWeather(), 300000);
 
-const defaultCities = ["5128581" /* New York City, USA */,
-                       "6094817" /* Ottawa, Canada */,
-                       "3530597" /* Mexico City, Mexico */,
-                       "2643743" /* London, Great Britain */,
-                       "343300"  /* Asmara, Eritrea */,
-                       "360630"  /* Cairo, Egypt */,
-                       "524894"  /* Moscow, Russia */,
-                       "1816670" /* Beijing, China */,
-                       "1850147" /* Tokyo, Japan */,
-                       "2147714" /* Sydney, Australia */];
-
-import {APIkey} from "./secret.js";
-fetchWeather(); setInterval(fetchWeather, 300000);
-
-// Add button listeners for unit conversions
+// Add listeners for unit conversions, search bar
 document.getElementById('unitChangeBack')
     .addEventListener('click', () => {
         unitConversion(
@@ -27,7 +20,7 @@ document.getElementById('unitChangeBack')
             document.getElementById("tempFeelsLike").innerText,
             document.getElementById("windSpeed").innerText,
             document.getElementById("unitChangeBack").innerText
-        );
+        )
     });
 document.getElementById('unitChangeForth')
     .addEventListener('click', () => {
@@ -38,33 +31,76 @@ document.getElementById('unitChangeForth')
             document.getElementById("tempFeelsLike").innerText,
             document.getElementById("windSpeed").innerText,
             document.getElementById("unitChangeForth").innerText
-        );
+        )
+    });
+search
+    .addEventListener('input', (e) => {
+        if (e.target.value.trim().length === 0) search.setAttribute("placeholder", "City, Country") // If there is nothing in the search bar make the placeholder a user prompt
+        else search.setAttribute('placeholder', e.target.value)                                     // If not make the placeholder the current location
+        search.setAttribute('size', search.getAttribute('placeholder').length)                      // Set the size of the search bar to the length of the placeholder regardless
+        
+        // Retrieve relevant locations and empty the results tray
+        let results = searchLocations(e.target.value)
+        while (resultsTray.firstChild) resultsTray.removeChild(resultsTray.firstChild)
+        
+        // For each relevant location, add it to the resultsTray and assign it a listener to fetch the weather for that location
+        for (let i = 0; i < results.length; i++) {
+            let result = document.createElement('li')
+            result.appendChild(document.createTextNode(results[i].name + ", " + results[i].country))
+            result.style.cursor = "pointer"
+            result.addEventListener('click', () => {
+                location = results[i]
+                fetchWeather()
+            });
+            resultsTray.appendChild(result)
+        }
     });
 
-// Retrieve and display weather data from the Open Weather Map API
+// Retrieve and store city objects from city.list.json in an array for later searching
+async function fetchLocations() {
+    try {locations = await (await fetch("./city.list.json")).json(); return locations}
+    catch (error) {console.error(error)}
+}
+
+// Retrieve weather data from the Open Weather Map API, make UI changes accrdoing to weather data
 async function fetchWeather() {
-    var response = await fetch("https://api.openweathermap.org/data/2.5/weather?id=" + defaultCities[1] + "&mode=JSON&units=" + unit + "&appid=" + APIkey, {
+    if (!location) location = locations[163679] // Default city is Ottawa, Canada
+    
+    // Fetch, parse the weather data
+    var response = await fetch("https://api.openweathermap.org/data/2.5/weather?id=" + location.id + "&mode=JSON&units=" + unit + "&appid=" + APIkey, {
         referrerPolicy: "no-referrer",
-    }).then(response => response.json()); // Fetch the weather data
-    console.log("Retrieved latest weather data.");
+    }).then(response => response.json());
+
+    // Set width of search bar to be length of selected location by using placeholder attribute
+    search.setAttribute('placeholder', location.name + ", " + location.country);
+    search.setAttribute('size', search.getAttribute('placeholder').length);
 
     // Check to see if it is daytime in the target city and change the background accordingly
-    var fetchTime = Math.floor(Date.now() / 1000) + response.timezone;
+    var fetchTime = Math.floor(Date.now() / 1000);
     var sunrise = response.sys.sunrise;
     var sunset = response.sys.sunset;
-    if (fetchTime > sunrise && fetchTime < sunset)
-        document.body.style.backgroundImage = "url(img/Daytime.jfif)";
-    else
-        document.body.style.backgroundImage = "url(img/NightSky.jpg)";
+    if (fetchTime > sunrise && fetchTime < sunset) document.body.style.backgroundImage = "url(img/Daytime.jfif)";
+    else document.body.style.backgroundImage = "url(img/NightSky.jpg)";
     
-    console.log(fetchTime + " < " + sunset + " && " + fetchTime + " > " + sunrise);
     displayWeather(response); // Display the results of our request
+}
+
+// Return relevant cities by checking for matches to user query
+function searchLocations(query) {
+    let results = []
+    let regex = RegExp("^" + query, "i")
+    query = query.trim()
+    if (query && query.length > 0) {
+        results = locations.filter(location => {
+            return regex.test(location.name + ", " + location.country)
+        })
+    } return results
 }
 
 // Display the weather data we've retrieved or converted
 function displayWeather(response, tempLow, tempCurrent, tempHigh, tempFeelsLike, windSpeed) {
     if (isNaN(arguments[0])) { // Check if an API response is passed - response will be NaN and the first argument, none of the other args will because I say so and I wrote the code >:(
-        document.getElementById("location").innerText = response.name + ", " + response.sys.country;
+        search.value = response.name + ", " + response.sys.country
         document.getElementById("weather").innerText = capitalizeEachWord(response.weather[0].description);
         document.getElementById("weatherIcon").src = "img/icons/" + response.weather[0].icon + ".png"
         document.getElementById("pressure").innerText = response.main.pressure + " hPa";
@@ -87,7 +123,7 @@ function displayWeather(response, tempLow, tempCurrent, tempHigh, tempFeelsLike,
             document.getElementById("tempHigh").innerText = round(response.main.temp_max) + " K";
             document.getElementById("tempFeelsLike").innerText = response.main.feels_like + " K";
             document.getElementById("windSpeed").innerText = response.wind.speed  + " m/s " + getBearing(response.wind.deg);
-        } console.log("Presented latest weather data.");
+        }
     } else { // If no response is present, we are presenting existing values we've converted
         var splitWind = document.getElementById("windSpeed").innerText.split(" ");;
         if (unit === "metric") { // Display the results with metric units
@@ -108,7 +144,7 @@ function displayWeather(response, tempLow, tempCurrent, tempHigh, tempFeelsLike,
             document.getElementById("tempHigh").innerText = round(tempHigh) + " K";
             document.getElementById("tempFeelsLike").innerText = tempFeelsLike + " K";
             document.getElementById("windSpeed").innerText = windSpeed + " m/s " + splitWind[splitWind.length - 1];
-        } console.log("Presented converted weather data.");
+        }
     }
 }
 
@@ -139,7 +175,7 @@ function unitConversion(tempLow, tempCurrent, tempHigh, tempFeelsLike, windSpeed
         }
     } else if (newUnit === "K") {
         switch (unit) {
-            case "metric": // Convert form metric to standard
+            case "metric": // Convert from metric to standard
                 unit = "standard";
                 document.getElementById("unitChangeBack").innerText = "°C";
                 document.getElementById("unitChangeForth").innerText = "°F";
@@ -183,16 +219,16 @@ function unitConversion(tempLow, tempCurrent, tempHigh, tempFeelsLike, windSpeed
                 windSpeed = parseFloat(windSpeed);
                 break;
         }
-    } displayWeather(0, tempLow, tempCurrent, tempHigh, tempFeelsLike, windSpeed);
+    } displayWeather(0, tempLow, tempCurrent, tempHigh, tempFeelsLike, windSpeed); // Display the converted values
 }
 
 // Round the raw data to display it more neatly
 function round(num, digits = 1) {
-    var rounded = Math.pow(10, digits);
+    let rounded = Math.pow(10, digits);
     return (Math.round(num * rounded) / rounded).toFixed(digits);
 }
 
-// Capitalize each word in the given string to make it more presentable
+// Capitalize each word in the given string to make it presentable
 function capitalizeEachWord(sentence) {
     var words = sentence.split(" ");                                        // Split the sentence by spaces into an array of words
     for (let word = 0; word < words.length; word++)                         // For each word...
@@ -202,25 +238,13 @@ function capitalizeEachWord(sentence) {
 
 // Convert degrees to a compass bearing
 function getBearing(degrees) {
-    var bearing;
-    if (340 < degrees && degrees <= 360 || 0 <= degrees && degrees <= 20)
-        bearing = "N";
-    else if (20 < degrees && degrees <= 70)
-        bearing = "NE";
-    else if (70 < degrees && degrees <= 110)
-        bearing = "E";
-    else if (110 < degrees && degrees  <= 160)
-        bearing = "SE";
-    else if (160 < degrees && degrees  <= 200)
-        bearing = "S";
-    else if (200 < degrees && degrees  <= 250)
-        bearing = "SW";
-    else if (250 < degrees && degrees  <= 290)
-        bearing = "W";
-    else if (290 < degrees && degrees  <= 340)
-        bearing = "NW";
-    else {
-        bearing = "ERR";
-        console.log("The input is not a valid degrees measurement.");
-    } console.log(degrees + " degrees"); return bearing;
+    if (340 < degrees && degrees <= 360 || 0 <= degrees && degrees <= 20) return "N";
+    else if (20 < degrees && degrees <= 70) return"NE";
+    else if (70 < degrees && degrees <= 110) return "E";
+    else if (110 < degrees && degrees  <= 160) return "SE";
+    else if (160 < degrees && degrees  <= 200) return "S";
+    else if (200 < degrees && degrees  <= 250) return "SW";
+    else if (250 < degrees && degrees  <= 290) return "W";
+    else if (290 < degrees && degrees  <= 340) return "NW";
+    else {console.log("The input is not a valid degrees measurement."); return "ERR"}
 }

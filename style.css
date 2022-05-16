@@ -6,28 +6,22 @@
     padding: 0;
 }
 
-html {
-    height: 100%;
-    width: 100%;
-}
-
 :root {
     --backgroundColor: black;
     --foregroundColor: white;
+    --resultsTrayColor: beige;
     --textColor: black;
 }
 
 body {
-    height: 100%;
-    width: 100%;
     background-image: url(img/Daytime.jfif);
     background-repeat: no-repeat;
     color: var(--textColor);
     font-family: "Jost";
-    overflow: hidden;
     -ms-overflow-style: none;
     scrollbar-width: none;
     position: relative;
+    cursor: default;
     margin: 0px;
     border: 0px;
     padding: 0px;
@@ -35,20 +29,48 @@ body {
 
 body::-webkit-scrollbar {
     display: none;
-} 
+}
+
+#content {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#resultsTray {
+    background-color: rgb(225, 255, 255, 0.5);
+    font-size: clamp(2rem, 2.7vmax, 2.5rem);
+    color: var(--textColor);
+    border-radius: 5%;
+    height: 10vh;
+    width: auto;
+    max-width: 11.5cm;
+    transform: translate(0, 0.2cm);
+    text-align: center;
+    overflow-y: auto;
+    overflow-x: hidden;
+    list-style: none;
+    z-index: 1;
+}
 
 #showWeather {
     background-color: var(--foregroundColor);
-    border-radius: 4%;
+    font-size: clamp(2rem, 2.7vmax, 2.5rem);
     color: var(--textColor);
+    border-radius: 5%;
     min-height: 10cm;
     max-height: 15cm;
-    min-width: 11.5cm;
+    min-width: 10cm;
     max-width: 20cm;
-    left: 50%;
-    top: 50%;
-    position: absolute;
-    transform: translate(-50%, -50%);
+    z-index: 2;
+}
+
+#showWeather p {
+    font-size: clamp(2rem, 2.7vmax, 2.5rem);
+    text-align: center;
 }
 
 #showWeather > div {
@@ -59,32 +81,44 @@ body::-webkit-scrollbar {
     justify-content: center;
 }
 
-#showWeather > #unitChangeBack, #unitChangeForth {
-    position: absolute;
-    top: 0%;
+#settings > #unitChangeBack, #unitChangeForth {
     font-family: "Jost";
     background-color: rgba(0,0,0,0);
     font-size: clamp(2.1rem, 3vmax, 2.7rem);
+    cursor: pointer;
+    width: 100%;
 }
 
-#showWeather > #unitChangeForth {
-    right: 0%;
-    padding-right: 2.5%;
+#settings > #unitChangeBack {
+    padding-left: 2%;
+    text-align: left;
 }
 
-#showWeather > #unitChangeBack {
-    left: 0%;
-    padding-left: 2.5%;
+#settings > #unitChangeForth {
+    padding-right: 2%;
+    text-align: right;
 }
 
-#showWeather  p {
+#settings > #unitChangeBack:hover, #unitChangeForth:hover {
+    font-weight: 600;
+}
+
+#searchBar {
+    width: min-content;
+}
+
+#searchBar > #location {
+    font-family: "Jost";
     font-size: clamp(2rem, 2.7vmax, 2.5rem);
     text-align: center;
 }
 
+#searchBar > #location:hover {
+    font-weight: 600;
+}
+
 #showWeather > #stats {
     flex-flow: row wrap;
-    justify-content: center;
 }
 
 #stats > .row2, .row3 {
@@ -108,8 +142,74 @@ body::-webkit-scrollbar {
 }
 
 #weatherIcon {
-    width: 3rem;
     height: 3rem;
-    padding-top: 1px;
+    width: 3rem;
     padding-left: 6px;
+}
+
+#searchIcon {
+    height: 2rem;
+    width: 2rem;
+    padding-top: 7px;
+    padding-left: 2px;
+}
+
+@media only screen and (max-width: 700px) and (max-height: 900px) {
+    html, body {
+        overflow: hidden;
+    }
+
+    body {
+        position: relative;
+    }
+
+    li {
+        font-size: clamp(1.5rem, 2.4vmax, 2.5rem);
+    }
+    
+    #resultsTray {
+        font-size: clamp(1.8rem, 2.4vmax, 2.5rem);
+        height: 10vh;
+        width: auto;
+        max-width: 11.5cm;
+        z-index: 1;
+    }
+
+    #showWeather {
+        font-size: clamp(1.8rem, 2.4vmax, 2.5rem);
+        width: 100vw;
+    }
+    
+    #searchBar > #location {
+        font-size: clamp(1.6rem, 2.7vmax, 2.7rem);
+    }
+
+    #settings > #unitChangeBack, #unitChangeForth {
+        font-size: clamp(1.6rem, 2.7vmax, 2.4rem);
+    }
+
+    #stats > #tempLow {
+        font-size: clamp(1.6rem, 2.7vmax, 2.7rem);
+    }
+    
+    #stats > #tempCurrent {
+        font-size: clamp(2rem, 3.7vmax, 3.2rem);
+    }
+    
+    #stats > #tempHigh {
+        font-size: clamp(1.6rem, 2.7vmax, 2.7rem);
+    }
+    
+    #weatherIcon {
+        height: 3rem;
+        width: 3rem;
+        padding-left: 6px;
+    }
+    
+    #searchIcon {
+        height: 2rem;
+        width: 2rem;
+        padding-top: 7px;
+        padding-left: 2px;
+    }
 }
