@@ -23,13 +23,16 @@ A run-down of this repo please?
         img -> Just a folder of images needed for the UI. Two for the background,
         and another folder full of icons for the UI.
 
-How do I use it?
-    Using weather fetcher is simple. Just input a location in the format
-    "city, country" (ignore the quotation marks) and all relevant locations
-    will be displayed in a pop-up list select your desired location from the
-    list and weather fetcher handles the rest. If you want to convert the
-    measurements, simply click/tap on the button corresponding to your desired
-    temperature metric
+How do I set it up and use it?
+    Weather fetcher uses the Fetch API, so you need to be running it in an environment where
+    CORS (Cross-Origin Requests) are supported. I used the live server extension in VS Code.
+    Simply click "Go Live" at the bottom right while in VS Code in the folder containing all
+    the files and the Live Server extension will handle the rest.
+
+    Using weather fetcher is simple. Just input a location in the format "city, country"
+    and all relevant locations will be displayed in a pop-up list select your desired location
+    from the list and weather fetcher handles the rest. If you want to convert the measurements,
+    simply click/tap on the button corresponding to your desired temperature metric.
 
 Why did you make this app?
     I wanted to apply what I learned from my previous two personal projects and
@@ -56,7 +59,7 @@ What were/are some key challenges?
           efficient that way
         - Since the API only contains city and country names, there are many duplicates.
           For example, querying Ottawa, USA will result in many results that look the same
-          to the user. I'd rather not paste the coordinates beside them so I would either
+          to the user. I'd rather not display the coordinates beside them so I would either
           have to:
             a) Leave it like this
             b) Remove duplicates, but this would be either extremely time-consuming if done
