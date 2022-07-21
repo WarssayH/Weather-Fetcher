@@ -107,13 +107,13 @@ body::-webkit-scrollbar {
     width: min-content;
 }
 
-#searchBar > #location {
+#searchBar > #search {
     font-family: "Jost";
     font-size: clamp(2rem, 2.7vmax, 2.5rem);
     text-align: center;
 }
 
-#searchBar > #location:hover {
+#searchBar > #search:hover {
     font-weight: 600;
 }
 
@@ -180,7 +180,7 @@ body::-webkit-scrollbar {
         width: 100vw;
     }
     
-    #searchBar > #location {
+    #searchBar > #search {
         font-size: clamp(1.6rem, 2.7vmax, 2.7rem);
     }
 
