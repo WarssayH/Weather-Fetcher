@@ -1,19 +1,23 @@
 import {APIkey} from "./secret.js"
 
-// Assign constants and globals, then fetch weather data to display and set a 5 minute interval for fetching new weather data
-(async function () { 
-    console.log("👋🏽 Hello!")
-    var app = {
+(async function () { // IIFE (Immediately Invoked Function Expression) to initialize app
+    console.log("👋🏽 Hello!") // Hello!
+    var app = { // Object that represents the state of the app
         location: "",
         locations: await fetchLocations(),
+
         unit: "metric",
         bgImg: document.body.style.backgroundImage,
         unitChangeBack: document.getElementById("unitChangeBack"),
         unitChangeForth: document.getElementById("unitChangeForth"),
-        getResultsTray: document.getElementById("resultsTray"),
+
+        resultsTray: document.getElementById("resultsTray"),
         search: document.getElementById("search"),
+        searchBar: document.getElementById("searchBar"),
+
         weather: document.getElementById("weather"),
         weatherIcon: document.getElementById("weatherIcon"),
+
         tempLow: document.getElementById("tempLow"),
         tempCurrent: document.getElementById("tempCurrent"),
         tempHigh: document.getElementById("tempHigh"),
@@ -22,44 +26,54 @@ import {APIkey} from "./secret.js"
         windSpeed: document.getElementById("windSpeed"),
         windBearing: "N",
         humidity: document.getElementById("humidity")
-    }; setInterval(fetchWeather(app), 300000)
+    }; setInterval(fetchWeather(app), 1800000); // Refresh the data every half hour 
     
-    // Add listeners for unit conversion buttons, search bar
+    // Event listeners for unit conversions, search input, query submission
     app.unitChangeBack.addEventListener('click', () => {unitConversion(app, app.unitChangeBack.innerText)})
     app.unitChangeForth.addEventListener('click', () => {unitConversion(app, app.unitChangeForth.innerText)})
     app.search.addEventListener('input', () => {
-        if (app.search.value.trim().length === 0) app.search.setAttribute("placeholder", "City, Country") // If there is nothing in the search bar make the placeholder a user prompt
-        else app.search.setAttribute('placeholder', app.search.value)                                     // If not make the placeholder the current location
-        app.search.setAttribute('size', app.search.getAttribute('placeholder').length)                      // Set the size of the search bar to the length of the placeholder regardless
-
-        // Retrieve relevant locations and empty the results tray
+        if (app.search.value.trim().length === 0) app.search.setAttribute("placeholder", "City, Country") // If there is nothing in the search bar make the placeholder a prompt
+        else app.search.setAttribute('placeholder', app.search.value)                                     // Else make the placeholder the current location
+        app.search.setAttribute('size', app.search.getAttribute('placeholder').length)                    // Set the size of the search bar to the length of the placeholder regardless
+    })
+    app.searchBar.addEventListener("submit", (e) => {
+        // Prevent default form submission, retrieve relevant locations to user query and empty the results tray
+        e.preventDefault()
+        while (app.resultsTray.firstChild) app.resultsTray.removeChild(app.resultsTray.firstChild)
         let results = searchLocations(app)
-        while (resultsTray.firstChild) resultsTray.removeChild(resultsTray.firstChild)
-            
-        // For each relevant location, add it to the resultsTray and assign it a listener to fetch the weather for that location
-        for (let i = 0; i < results.length; i++) {
+        console.log(results)
+
+        // For each relevant location, add it to the resultsTray and assign it a listener to fetch the weather for that location & empty results tray
+        if (results.length !== 0) {
+            for (let index = 0; index < results.length; index++) {
+                let result = document.createElement('li')
+                result.appendChild(document.createTextNode(results[index].name))
+                result.style.cursor = "pointer"
+                result.addEventListener('click', () => {app.location = results[index]; fetchWeather(app); while (app.resultsTray.firstChild) app.resultsTray.removeChild(app.resultsTray.firstChild)})
+                app.resultsTray.appendChild(result)
+            }
+        } else { // If there are no relevant locations, notify the user in place of the results
             let result = document.createElement('li')
-            result.appendChild(document.createTextNode(results[i].name))
-            result.style.cursor = "pointer"
-            result.addEventListener('click', () => {
-                app.location = results[i]
-                fetchWeather(app)
-            }); resultsTray.appendChild(result)
+            result.appendChild(document.createTextNode("No results"))
+            result.style.cursor = "not-allowed"
+            app.resultsTray.appendChild(result)
         }
     })
 })()
 
 // Retrieve and store city objects from city.list.json in an alphabetically sorted array
 async function fetchLocations() {
-    try {
-        let locations = await (await fetch("./city.list.json")).json()
-        for (let index = 0; index < locations.length; index++) locations[index] = {name: locations[index].name + ", " + locations[index].country, id: locations[index].id}
-        locations = locations.sort(sortByProperty(("name")))
-        return locations
-    } catch (error) {console.error(error)}
+    let locations = await (await fetch("./city.list.json")).json()
+    for (let index = 0; index < locations.length; index++) {
+        locations[index] = {
+            name: locations[index].name + ", " + locations[index].country,
+            id: locations[index].id,
+            coord: locations[index].coord
+        }
+    } return locations.sort(sortByProperty(("name")))
 }
 
-// Sorts JSON objects by a given property in ascending order
+// Sort JSON objects by a given property in ascending order
 function sortByProperty(property) {
     return function(a,b) {
         if (a[property] > b[property]) return 1
@@ -68,16 +82,16 @@ function sortByProperty(property) {
     }
 }
 
-// Retrieve weather data from the Open Weather Map API, make UI changes according to weather data
+// Retrieve weather data from the Open Weather Map API, populate UI according to weather data
 async function fetchWeather(app) {
-    if (app.location === "") app.location = app.locations[Math.floor(Math.random() * app.locations.length - 1)] // Default city will be random
+    if (app.location === "") app.location = app.locations[Math.floor(Math.random() * (app.locations.length - 1))] // Select a random location to initially display
     
     // Fetch, parse the weather data
     var response = await fetch("https://api.openweathermap.org/data/2.5/weather?id=" + app.location.id + "&mode=JSON&units=" + app.unit + "&appid=" + APIkey, {
         referrerPolicy: "no-referrer",
     }).then(response => response.json())
 
-    // Set width of search bar to be length of selected location by using placeholder attribute
+    // Set width of search bar to be length of selected location
     app.search.setAttribute('placeholder', app.location.name)
     app.search.setAttribute('size', app.search.getAttribute('placeholder').length)
 
@@ -88,12 +102,12 @@ async function fetchWeather(app) {
     if (fetchTime > sunrise && fetchTime < sunset) app.bgImg = "url(img/Daytime.jfif)"
     else app.bgImg = "url(img/NightSky.jpg)"
     
-    displayWeather(response, app) // Display the results of our request
+    displayWeather(app, response) // Display the results of our request
 }
 
 // Display the weather data we've retrieved or converted
-function displayWeather(response, app) {
-    if (isNaN(arguments[0])) { // Check if an API response is passed
+function displayWeather(app, response) {
+    if (response) { // Check if an API response is passed, if it is populate UI w/ the new weather data
         app.search.value = app.location.name
         app.weather.innerText = capitalizeEachWord(response.weather[0].description)
         app.weatherIcon.src = "img/icons/" + response.weather[0].icon + ".png"
@@ -119,13 +133,13 @@ function displayWeather(response, app) {
             app.tempFeelsLike.innerText = response.main.feels_like + " K"
             app.windSpeed.innerText = response.wind.speed  + " m/s " + app.windBearing
         }
-    } else { // If no response is present, we are presenting existing values we've converted
+    } else { // If no response is present, we are populating the UI w/ converted values
         if (app.unit === "metric") { // Display the results with metric units
             app.tempLow.innerText = round(app.tempLow.innerText) + " °C"
             app.tempCurrent.innerText = round(tempCurrent.innerText) + " °C"
             app.tempHigh.innerText = round(app.tempHigh.innerText) + " °C"
             app.tempFeelsLike.innerText = app.tempFeelsLike.innerText + " °C"
-            app.windSpeed.innerText = app.windSpeed.innerText+ " m/s " + app.windBearing
+            app.windSpeed.innerText = app.windSpeed.innerText + " m/s " + app.windBearing
         } else if (app.unit === "imperial") { // Display the results with imperial units
             app.tempLow.innerText = round(app.tempLow.innerText) + " °F"
             app.tempCurrent.innerText = round(app.tempCurrent.innerText) + " °F"
@@ -145,21 +159,10 @@ function displayWeather(response, app) {
 // Return relevant cities to user query
 function searchLocations(app) {
     let query = app.search.value.trim()
-    if (!query && query.length === 0) return []
-
-    let start = 0
-    let end = 0
-    let depth = 0
-    let index = 0
-    while (index < app.locations.length && depth < query.length) {
-        if (app.locations[index].name[depth] === query[depth]) {
-            start = index
-            while (index < app.locations.length && app.locations[index].name[depth] === query[depth]) index += 1
-            end = index
-            index = start
-            depth += 1
-        } index += 1
-    } return app.locations.slice(start, end)
+    let regex = RegExp("^" + query, "i")
+    let results = []
+    if (query.length > 0) results = app.locations.filter(location => {return regex.test(location.name)})
+    return results
 }
 
 // Switch units when the user requests a conversion
@@ -233,10 +236,10 @@ function unitConversion(app, newUnit) {
                 app.windSpeed.innerText = parseFloat(app.windSpeed.innerText)
                 break
         }
-    } displayWeather(0, app) // Display the converted values
+    } displayWeather(app) // Display the converted values
 }
 
-// Round the raw data to display it more neatly
+// Round data for display
 function round(num, digits = 1) {
     let rounded = Math.pow(10, digits)
     return (Math.round(num * rounded) / rounded).toFixed(digits)
@@ -244,21 +247,21 @@ function round(num, digits = 1) {
 
 // Capitalize each word in the given string to make it presentable
 function capitalizeEachWord(sentence) {
-    var words = sentence.split(" ")                                        // Split the sentence by spaces into an array of words
-    for (let word = 0; word < words.length; word++)                        // For each word...
-        words[word] = words[word][0].toUpperCase() + words[word].substr(1) // ... capitalize the first letter
+    let words = sentence.split(" ")                                        // Split the sentence by spaces into an array of words
+    for (let word = 0; word < words.length; word++)                        // For each word capitalize the first letter
+        words[word] = words[word][0].toUpperCase() + words[word].substr(1)
     return words.join(" ")                                                 // Join them back into a sentence and return the result
 }
 
 // Convert degrees to a compass bearing
 function getBearing(degrees) {
     if (340 < degrees && degrees <= 360 || 0 <= degrees && degrees <= 20) return "N"
-    else if (20 < degrees && degrees <= 70) return"NE"
+    else if (20 < degrees && degrees <= 70) return "NE"
     else if (70 < degrees && degrees <= 110) return "E"
     else if (110 < degrees && degrees  <= 160) return "SE"
     else if (160 < degrees && degrees  <= 200) return "S"
     else if (200 < degrees && degrees  <= 250) return "SW"
     else if (250 < degrees && degrees  <= 290) return "W"
     else if (290 < degrees && degrees  <= 340) return "NW"
-    else {console.log("The input is not a valid degrees measurement."); return "ERR"}
+    else return "ERR"
 }
