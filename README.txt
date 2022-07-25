@@ -7,11 +7,11 @@ A run-down of this repo please?
     index.html -> HTML (HyperText Markup Language) code for the app. Contains
     default values in case the weather isn't fetched which are just placeholders.
 
-    style.css -> External CSS (Cascading StyleSheets) file which handles all
+    style.css -> External CSS (Cascading StyleSheets) which handles all
     styling and responsiveness.
 
-    functionality.js -> External JS file which attatches and handles all listeners,
-    handles logical operations such as fetching weather data, parsing and filtering
+    functionality.js -> External JavaScript which attatches and handles all listeners,
+    handles operations including fetching weather data, parsing and filtering
     for relevant locations from city.list.json based on user input, converting
     to/from measurement metrics, capitalizing/rounding off fetched data.
 
