@@ -41,7 +41,6 @@ import {APIkey} from "./secret.js"
         e.preventDefault()
         while (app.resultsTray.firstChild) app.resultsTray.removeChild(app.resultsTray.firstChild)
         let results = searchLocations(app)
-        console.log(results)
 
         // For each relevant location, add it to the resultsTray and assign it a listener to fetch the weather for that location & empty results tray
         if (results.length !== 0) {
@@ -70,16 +69,7 @@ async function fetchLocations() {
             id: locations[index].id,
             coord: locations[index].coord
         }
-    } return locations.sort(sortByProperty(("name")))
-}
-
-// Sort JSON objects by a given property in ascending order
-function sortByProperty(property) {
-    return function(a,b) {
-        if (a[property] > b[property]) return 1
-        else if (a[property] < b[property]) return -1
-        else return 0
-    }
+    } return locations
 }
 
 // Retrieve weather data from the Open Weather Map API, populate UI according to weather data
