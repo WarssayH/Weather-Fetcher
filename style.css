@@ -46,7 +46,8 @@ body::-webkit-scrollbar {
     font-size: clamp(2rem, 2.7vmax, 2.5rem);
     color: var(--textColor);
     border-radius: 5%;
-    height: 10vh;
+    max-height: 20vh;
+    min-height: 10vh;
     width: auto;
     max-width: 11.5cm;
     transform: translate(0, 0.2cm);
