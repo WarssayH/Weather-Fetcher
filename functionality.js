@@ -77,8 +77,8 @@ async function fetchWeather(app) {
     if (app.location === "") app.location = app.locations[Math.floor(Math.random() * (app.locations.length - 1))] // Select a random location to initially display
     
     // Fetch, parse the weather data
-    var response = await fetch("https://api.openweathermap.org/data/2.5/weather?id=" + app.location.id + "&mode=JSON&units=" + app.unit + "&appid=" + APIkey, {
-        referrerPolicy: "no-referrer",
+    var response = await fetch("https://weather-node-express-api.herokuapp.com/location=" + app.location.id, {
+        method: "GET"
     }).then(response => response.json())
 
     // Set width of search bar to be length of selected location
