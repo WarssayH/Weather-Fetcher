@@ -1,5 +1,3 @@
-import {APIkey} from "./secret.js"
-
 (async function () { // IIFE (Immediately Invoked Function Expression) to initialize app
     console.log("👋🏽 Hello!") // Hello!
     var app = { // Object that represents the state of the app
@@ -26,16 +24,18 @@ import {APIkey} from "./secret.js"
         windSpeed: document.getElementById("windSpeed"),
         windBearing: "N",
         humidity: document.getElementById("humidity")
-    }; setInterval(fetchWeather(app), 1800000); // Refresh the data every half hour 
+    }; setInterval(fetchWeather(app), 1800000); // Refresh the data automatically every half hour 
     
     // Event listeners for unit conversions, search input, query submission
     app.unitChangeBack.addEventListener('click', () => {unitConversion(app, app.unitChangeBack.innerText)})
     app.unitChangeForth.addEventListener('click', () => {unitConversion(app, app.unitChangeForth.innerText)})
+
     app.search.addEventListener('input', () => {
         if (app.search.value.trim().length === 0) app.search.setAttribute("placeholder", "City, Country") // If there is nothing in the search bar make the placeholder a prompt
         else app.search.setAttribute('placeholder', app.search.value)                                     // Else make the placeholder the current location
         app.search.setAttribute('size', app.search.getAttribute('placeholder').length)                    // Set the size of the search bar to the length of the placeholder regardless
     })
+    
     app.searchBar.addEventListener("submit", (e) => {
         // Prevent default form submission, retrieve relevant locations to user query and empty the results tray
         e.preventDefault()
@@ -48,8 +48,12 @@ import {APIkey} from "./secret.js"
                 let result = document.createElement('li')
                 result.appendChild(document.createTextNode(results[index].name))
                 result.style.cursor = "pointer"
-                result.addEventListener('click', () => {app.location = results[index]; fetchWeather(app); while (app.resultsTray.firstChild) app.resultsTray.removeChild(app.resultsTray.firstChild)})
-                app.resultsTray.appendChild(result)
+
+                result.addEventListener('click', () => { // Remove all elements currently in the resultsTray
+                    app.location = results[index]; 
+                    fetchWeather(app); 
+                    while (app.resultsTray.firstChild) app.resultsTray.removeChild(app.resultsTray.firstChild)
+                }); app.resultsTray.appendChild(result)  // Populate the resultsTray with our new results
             }
         } else { // If there are no relevant locations, notify the user in place of the results
             let result = document.createElement('li')
