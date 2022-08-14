@@ -88,13 +88,6 @@ async function fetchWeather(app) {
     // Set width of search bar to be length of selected location
     app.search.setAttribute('placeholder', app.location.name)
     app.search.setAttribute('size', app.search.getAttribute('placeholder').length)
-
-    // Check to see if it is daytime in the target city and change the background accordingly
-    var fetchTime = Math.floor(Date.now() / 1000)
-    var sunrise = response.sys.sunrise
-    var sunset = response.sys.sunset
-    if (fetchTime > sunrise && fetchTime < sunset) app.bgImg = "url(img/Daytime.jfif)"
-    else app.bgImg = "url(img/NightSky.jpg)"
     
     displayWeather(app, response) // Display the results of our request
 }
