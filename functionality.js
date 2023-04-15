@@ -81,7 +81,7 @@ async function fetchWeather(app) {
     if (app.location === "") app.location = app.locations[Math.floor(Math.random() * (app.locations.length - 1))] // Select a random location to initially display
     
     // Retrieve weather data from OpenWeatherAPI
-    var response = await fetch("http://jeweled-successful-nectarine.glitch.me/location=" + app.location.id, {
+    var response = await fetch("https://jeweled-successful-nectarine.glitch.me/location=" + app.location.id, {
         method: "GET"
     }).then(response => response.json())
 
