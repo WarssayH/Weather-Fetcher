@@ -61,16 +61,12 @@ What were/are some key challenges?
 
         - Since the API only contains city and country names, there are many duplicates.
           For example, querying Ottawa, USA will result in many results that look the same
-          to the user. I'd rather not display the coordinates beside them so I would either
-          have to:
-            a) Leave it like this.
-            b) Remove duplicates, but this would be either extremely time-consuming if done
-               manually or lead to very important locations being removed.
-            c) Use a different API.
-            - I went with a.
+          to the user. I'd rather not display the coordinates beside them so I have chosen
+          to live with it.
         
         - Keeping the API key a secret when deploying
-          - Currently working on this issue.
+          - Using middleware hosted on Glitch means I can keep private info private. See more at
+            https://github.com/WarssayH/Weather-Fetcher-Node-Express-API
 
         - The learning! A lot of the things I accomplished in this project were things I
           didn't know how to accomplish beforehand such as fetching data from an API, working
