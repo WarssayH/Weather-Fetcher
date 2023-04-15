@@ -80,8 +80,8 @@ async function fetchLocations() {
 async function fetchWeather(app) {
     if (app.location === "") app.location = app.locations[Math.floor(Math.random() * (app.locations.length - 1))] // Select a random location to initially display
     
-    // TODO: Retrieve weather data from OpenWeatherAPI
-    var response = await fetch("https://weather-node-express-api.netlify.app/location=" + app.location.id, {
+    // Retrieve weather data from OpenWeatherAPI
+    var response = await fetch("jeweled-successful-nectarine.glitch.me/location=" + app.location.id, {
         method: "GET"
     }).then(response => response.json())
 
